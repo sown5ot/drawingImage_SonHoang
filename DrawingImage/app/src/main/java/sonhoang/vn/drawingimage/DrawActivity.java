@@ -2,6 +2,7 @@ package sonhoang.vn.drawingimage;
 
 
 import android.content.DialogInterface;
+import android.content.Intent;
 import android.graphics.Bitmap;
 import android.support.annotation.IdRes;
 import android.support.v7.app.AppCompatActivity;
@@ -34,8 +35,21 @@ public class DrawActivity extends AppCompatActivity implements View.OnClickListe
         setContentView(R.layout.activity_draw);
 
         setupUI();
-        addDrawingView();
+
+        if (getIntent().getBooleanExtra(MainActivity.MODE_CAMERA, false)){
+            openCamera();
+            Log.d(TAG, "onCreate: OpenCamera");
+
+        } else {
+            addDrawingView();
+            Log.d(TAG, "onCreate: DrawingView");
+        }
+
         addListener();
+    }
+
+    private void openCamera() {
+
     }
 
     private void addDrawingView() {
@@ -96,6 +110,9 @@ public class DrawActivity extends AppCompatActivity implements View.OnClickListe
                 saveImage();
                 ivSave.setClickable(false);
                 this.finish();
+
+                Intent intent = new Intent(this, MainActivity.class);
+                startActivity(intent);
                 break;
             }
         }
@@ -129,5 +146,7 @@ public class DrawActivity extends AppCompatActivity implements View.OnClickListe
                 .build()
                 .show();
     }
+
+
 
 }

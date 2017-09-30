@@ -23,6 +23,7 @@ import java.util.List;
 public class MainActivity extends AppCompatActivity {
     private static final String TAG = MainActivity.class.toString();
     private static final int PERMISSION_REQUEST_CODE = 1;
+    public static String MODE_CAMERA = "mode_camera";
 
     private FloatingActionButton fbAddButton;
     private SubActionButton btCameraNote;
@@ -62,14 +63,16 @@ public class MainActivity extends AppCompatActivity {
                 .build();
 
         gvImage = (GridView) findViewById(R.id.gv_image);
-        ImageAdapter imageAdapter = new ImageAdapter(getListImagePath(), this);
-        gvImage.setAdapter(imageAdapter);
     }
 
     private void addListener() {
         btCameraNote.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
+                Intent intent = new Intent(MainActivity.this, DrawActivity.class);
+                intent.putExtra(MODE_CAMERA, true);
+                startActivity(intent);
+                floatingActionMenu.close(false);
                 Log.d(TAG, "onClick: camera");
             }
         });
@@ -78,6 +81,7 @@ public class MainActivity extends AppCompatActivity {
             @Override
             public void onClick(View v) {
                 Intent intent = new Intent(MainActivity.this, DrawActivity.class);
+                intent.putExtra(MODE_CAMERA, false);
                 startActivity(intent);
                 floatingActionMenu.close(false);
             }
@@ -96,5 +100,12 @@ public class MainActivity extends AppCompatActivity {
             }
         }
         return imagePaths;
+    }
+
+    @Override
+    protected void onStart() {
+        super.onStart();
+        ImageAdapter imageAdapter = new ImageAdapter(getListImagePath(), this);
+        gvImage.setAdapter(imageAdapter);
     }
 }
