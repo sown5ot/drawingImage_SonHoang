@@ -1,13 +1,18 @@
 package sonhoang.vn.drawingimage;
 
+
 import android.content.DialogInterface;
+import android.graphics.Bitmap;
 import android.support.annotation.IdRes;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.util.Log;
 import android.view.View;
+import android.view.ViewGroup;
 import android.widget.ImageView;
 import android.widget.RadioGroup;
+import android.widget.RelativeLayout;
+
 
 import com.flask.colorpicker.ColorPickerView;
 import com.flask.colorpicker.builder.ColorPickerClickListener;
@@ -18,9 +23,10 @@ public class DrawActivity extends AppCompatActivity implements View.OnClickListe
     private ImageView ivPickColor;
     private ImageView ivSave;
     private RadioGroup radioGroup;
+    private DrawingView drawingView;
 
-    private int currentColor = 0xFFF21524;
-    private int curentSize = 10;
+    public static int currentColor = 0xFFF21524;
+    public static int curentSize = 10;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -28,7 +34,19 @@ public class DrawActivity extends AppCompatActivity implements View.OnClickListe
         setContentView(R.layout.activity_draw);
 
         setupUI();
+        addDrawingView();
         addListener();
+    }
+
+    private void addDrawingView() {
+        RelativeLayout relativeLayout = (RelativeLayout) findViewById(R.id.rl_drawing_view);
+
+        drawingView = new DrawingView(this);
+        drawingView.setLayoutParams(new ViewGroup.LayoutParams(
+                ViewGroup.LayoutParams.MATCH_PARENT,
+                ViewGroup.LayoutParams.MATCH_PARENT));
+
+        relativeLayout.addView(drawingView);
     }
 
     private void addListener() {
@@ -75,14 +93,22 @@ public class DrawActivity extends AppCompatActivity implements View.OnClickListe
                 break;
             }
             case R.id.iv_save:{
-                save();
+                saveImage();
+                ivSave.setClickable(false);
+                this.finish();
                 break;
             }
         }
     }
 
-    private void save() {
+    private void saveImage() {
+        drawingView.setDrawingCacheEnabled(true);
+        drawingView.buildDrawingCache();
+        Bitmap bitmap = drawingView.getDrawingCache();
 
+        Log.d(TAG, "save image: " + bitmap.getWidth());
+
+        ImageUtils.saveImage(bitmap, this);
     }
 
     private void pickColor() {
@@ -99,7 +125,9 @@ public class DrawActivity extends AppCompatActivity implements View.OnClickListe
                         currentColor = selectedColor;
                     }
                 })
+                .lightnessSliderOnly()
                 .build()
                 .show();
     }
+
 }
